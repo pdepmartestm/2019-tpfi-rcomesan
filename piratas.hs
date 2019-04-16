@@ -37,15 +37,15 @@ tieneMismoTesoroDistintoPrecio _pirataA _pirataB =
 precioTesoroMasValioso _pirata =
     maximum(map precioTesoro (tesoros _pirata))
 
-agregarTesoro _tesoro _pirata = (nombre _pirata, (tesoros _pirata) ++ [_tesoro])
+agregarTesoro _tesoro _pirata = (nombre _pirata, (tesoros _pirata) ++ [_tesoro], tipoSaqueo _pirata)
 
 esValioso _tesoro = (precioTesoro _tesoro) > 100
 
 perderTesorosValiosos _pirata = 
-    (nombre _pirata, filter (not.esValioso) (tesoros _pirata))
+    (nombre _pirata, filter (not.esValioso) (tesoros _pirata), tipoSaqueo _pirata)
 
 perderTesorosPorNombre _pirata _nombreTesoro = 
-    (nombre _pirata, filter (not.(==_nombreTesoro).nombreTesoro) (tesoros _pirata))
+    (nombre _pirata, filter (not.(==_nombreTesoro).nombreTesoro) (tesoros _pirata), tipoSaqueo _pirata)
 
 -- --------------------------------------------------------------------------------------
 --  Temporada de Saqueos
