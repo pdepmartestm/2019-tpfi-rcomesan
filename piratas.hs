@@ -8,6 +8,8 @@
 --  Tesoros piratas
 -- --------------------------------------------------------------------------------------
 
+import Text.Show.Functions
+
 jackSparrow = ("Jack Sparrow", [("Brujula", 10000), ("Frasco de Arena", 0)])
 davidJones = ("David Jones", [("Cajita Musical", 1)])
 anneBonny = ("Anne Bonny", [("Doblones", 100), ("Frasco de Arena", 1)])
@@ -66,37 +68,38 @@ saqueoComplejo _nombreTesoro _tesoro = True
 
 saquear (_nombre, _tesoros) _tipoSaqueo _tesoro =
     (_nombre, _tesoros ++ filter (_tipoSaqueo) [_tesoro]) 
-    
+
 -- --------------------------------------------------------------------------------------
 --  Navegando los siete mares
 -- --------------------------------------------------------------------------------------
 
-perlaNegra = ("Perla Negra", [jackSparrow, anneBonny]) --falta tipo saqueo
-holandesErrante = ("Holandes Errante", [davidJones])
-interceptor = ("Interceptor", [elizabethSwann, willTurner])
+perlaNegra = ("Perla Negra", [jackSparrow, anneBonny], saqueoComplejo "Sombrero")
+holandesErrante = ("Holandes Errante", [davidJones], saqueoEspecifico "Oro")
+interceptor = ("Interceptor", [elizabethSwann, willTurner], saqueoConCorazon)
 
 islaTortuga = ("Frasco de Arena", 1)
 islaDelRon = ("Botella de Ron", 25)
 islaCualk = ("Frasco de Arena", 1)
 ciudadX = [("Sombrero", 15), ("Sombrero", 250), ("Sombrero", 500)]
 
-nombreBarco (_nombreBarco, _) = _nombreBarco
-tripulacion (_, _tripulacionBarco) = _tripulacionBarco
+nombreBarco (_nombreBarco, _, _) = _nombreBarco
+tripulacion (_, _tripulacionBarco, _) = _tripulacionBarco
+tipoSaqueo (_, _, _tipoSaqueo) = _tipoSaqueo
 numTripulantes _barco = length (tripulacion _barco)
 
 subePirata _barco _pirata = 
-    (nombreBarco _barco, tripulacion _barco ++ [_pirata])
+    (nombreBarco _barco, tripulacion _barco ++ [_pirata], tipoSaqueo _barco)
 
 bajaPirata _barco _pirata =
-    (nombreBarco _barco, filter (not.(nombre _pirata==).nombre) (tripulacion _barco))
+    (nombreBarco _barco, filter (not.(nombre _pirata==).nombre) (tripulacion _barco), tipoSaqueo _barco)
 
 --  a)
 anclarEnIslaDeshabitada _barco _isla =
-    (nombreBarco _barco, map (agregarTesoro _isla) (tripulacion _barco))
+    (nombreBarco _barco, map (agregarTesoro _isla) (tripulacion _barco), tipoSaqueo _barco)
 
 --  b)
-atacarCiudad (_nombreBarco, _tripulacion) _ciudad =
-    (_nombreBarco, zipWith saquear _tripulacion _ciudad)
+atacarCiudad _barco _ciudad =
+    (nombreBarco _barco, zipWith (\p t -> saquear p (tipoSaqueo _barco) t) (tripulacion _barco) _ciudad, tipoSaqueo _barco)
 
 --  c) implementación simple, reutilizando atacarCiudad que respeta las preferencias de saqueo de c/u
 abordarBarcoConPreferencias _barcoA _barcoB = 
