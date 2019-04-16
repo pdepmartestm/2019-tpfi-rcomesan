@@ -8,15 +8,14 @@
 --  Tesoros piratas
 -- --------------------------------------------------------------------------------------
 
-jackSparrow = ("Jack Sparrow", [("Brujula", 10000), ("Frasco de Arena", 0)], saqueoComplejo)
-davidJones = ("David Jones", [("Cajita Musical", 1)], saqueoConCorazon)
-anneBonny = ("Anne Bonny", [("Doblones", 100), ("Frasco de Arena", 1)], saqueoValioso)
-elizabethSwann = ("Elizabeth Swann", [("Moneda del cofre muerto", 100), ("Espada de Hierro", 50)], saqueoEspecifico)
-willTurner = ("Will Turner", [("Cuchillo", 5), ("Sombrero", 250)], saqueoValioso)
+jackSparrow = ("Jack Sparrow", [("Brujula", 10000), ("Frasco de Arena", 0)])
+davidJones = ("David Jones", [("Cajita Musical", 1)])
+anneBonny = ("Anne Bonny", [("Doblones", 100), ("Frasco de Arena", 1)])
+elizabethSwann = ("Elizabeth Swann", [("Moneda del cofre muerto", 100), ("Espada de Hierro", 50)])
+willTurner = ("Will Turner", [("Cuchillo", 5), ("Sombrero", 250)])
 
-nombre (_nombre, _, _) = _nombre
-tesoros (_, _tesoros, _) = _tesoros
-tipoSaqueo (_, _, _tipoSaqueo) = _tipoSaqueo
+nombre (_nombre, _) = _nombre
+tesoros (_, _tesoros) = _tesoros
 nombreTesoro (_nombre, _) = _nombre
 precioTesoro (_, _precio) = _precio
 
@@ -24,28 +23,28 @@ cantidadTesoros _pirata = length (tesoros _pirata)
 
 esAfortunado _pirata = (sum (map precioTesoro (tesoros _pirata))) > 10000
 
-_mismoTesoroDistintoPrecio _tesoroA _tesoroB = True
+mismoTesoroDistintoPrecio _tesoroA _tesoroB = True
     && (nombreTesoro _tesoroA == nombreTesoro _tesoroB)
     && (precioTesoro _tesoroA /= precioTesoro _tesoroB)
 
-_pirataTieneTesoroDistintoPrecio _pirata _tesoro = 
-    any (_mismoTesoroDistintoPrecio _tesoro) (tesoros _pirata)
+pirataTieneTesoroDistintoPrecio _pirata _tesoro = 
+    any (mismoTesoroDistintoPrecio _tesoro) (tesoros _pirata)
 
 tieneMismoTesoroDistintoPrecio _pirataA _pirataB = 
-    any (_pirataTieneTesoroDistintoPrecio _pirataA) (tesoros _pirataB)
+    any (pirataTieneTesoroDistintoPrecio _pirataA) (tesoros _pirataB)
 
 precioTesoroMasValioso _pirata =
     maximum(map precioTesoro (tesoros _pirata))
 
-agregarTesoro _tesoro _pirata = (nombre _pirata, (tesoros _pirata) ++ [_tesoro], tipoSaqueo _pirata)
+agregarTesoro _tesoro _pirata = (nombre _pirata, _tesoro : (tesoros _pirata))
 
 esValioso _tesoro = (precioTesoro _tesoro) > 100
 
 perderTesorosValiosos _pirata = 
-    (nombre _pirata, filter (not.esValioso) (tesoros _pirata), tipoSaqueo _pirata)
+    (nombre _pirata, filter (not.esValioso) (tesoros _pirata))
 
 perderTesorosPorNombre _pirata _nombreTesoro = 
-    (nombre _pirata, filter (not.(==_nombreTesoro).nombreTesoro) (tesoros _pirata), tipoSaqueo _pirata)
+    (nombre _pirata, filter (not.(==_nombreTesoro).nombreTesoro) (tesoros _pirata))
 
 -- --------------------------------------------------------------------------------------
 --  Temporada de Saqueos
@@ -72,13 +71,13 @@ saquear (_nombre, _tesoros, 4) _tesoro =
 --  Navegando los siete mares
 -- --------------------------------------------------------------------------------------
 
-perlaNegra = ("Perla Negra", [jackSparrow, anneBonny])
+perlaNegra = ("Perla Negra", [jackSparrow, anneBonny]) --falta tipo saqueo
 holandesErrante = ("Holandes Errante", [davidJones])
 interceptor = ("Interceptor", [elizabethSwann, willTurner])
 
-islaTortuga = [("Frasco de Arena", 1)]
-islaDelRon = [("Botella de Ron", 25)]
-islaCualk = [("Frasco de Arena", 1), ("Botella de Ron", 25)]
+islaTortuga = ("Frasco de Arena", 1)
+islaDelRon = ("Botella de Ron", 25)
+islaCualk = ("Frasco de Arena", 1)
 ciudadX = [("Sombrero", 15), ("Sombrero", 250), ("Sombrero", 500)]
 
 nombreBarco (_nombreBarco, _) = _nombreBarco
@@ -93,7 +92,7 @@ bajaPirata _barco _pirata =
 
 --  a)
 anclarEnIslaDeshabitada _barco _isla =
-    (nombreBarco _barco, map (agregarTesoro (head _isla)) (tripulacion _barco))
+    (nombreBarco _barco, map (agregarTesoro _isla) (tripulacion _barco))
 
 --  b)
 atacarCiudad (_nombreBarco, _tripulacion) _ciudad =
@@ -113,9 +112,11 @@ takeLast _n _list = reverse (take _n (reverse _list))
 robarTesoro _tripulacionA _tripulacionB _indice =
     (
         nombre (_tripulacionA !! _indice),
-        (tesoros (_tripulacionA !! _indice)) ++ (tesoros (_tripulacionB !! _indice)),
-        tipoSaqueo (_tripulacionA !! _indice)
+        (tesoros (_tripulacionA !! _indice)) ++ (tesoros (_tripulacionB !! _indice))
     )
+
+algo triupacionA tripulacionB =
+    (zipWith saquear  triuplacionA tripulacionB) ++ drop ((length tripulacionB) tripulacionA)
 
 abordarBarco _barcoA _barcoB =
     (
