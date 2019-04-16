@@ -50,23 +50,23 @@ perderTesorosPorNombre _pirata _nombreTesoro =
 --  Temporada de Saqueos
 -- --------------------------------------------------------------------------------------
 
-saqueoValioso =    1    -- sólo saquea tesoros que cumplen esValioso
-saqueoEspecifico = 2    -- sólo saquea tesoros con nombre "Sombrero"
-saqueoConCorazon = 3    -- no saquea nada
-saqueoComplejo =   4    -- sólo saquea tesoros que cumplen 1 y 2
+-- sólo saquea tesoros que cumplen esValioso
+saqueoValioso _tesoro = esValioso _tesoro
 
-saquear (_nombre, _tesoros, 1) _tesoro =
-    (_nombre, _tesoros ++ (filter esValioso [_tesoro]), 1)
+-- sólo saquea tesoros con nombre especifico
+saqueoEspecifico _nombreTesoro _tesoro = _nombreTesoro == (nombreTesoro _tesoro)
 
-saquear (_nombre, _tesoros, 2) _tesoro =
-    (_nombre, _tesoros ++ (filter (("Sombrero"==).nombreTesoro) [_tesoro]), 2)
+-- no saquea nada
+saqueoConCorazon _tesoro = False
 
-saquear (_nombre, _tesoros, 3) _tesoro =
-    (_nombre, _tesoros, 3)
+-- sólo saquea tesoros que cumplen 1 y 2
+saqueoComplejo _nombreTesoro _tesoro = True
+    && saqueoValioso _tesoro
+    && saqueoEspecifico _nombreTesoro _tesoro
 
-saquear (_nombre, _tesoros, 4) _tesoro =
-    (_nombre, _tesoros ++ (filter (("Sombrero"==).nombreTesoro) (filter esValioso [_tesoro])), 2)
-
+saquear (_nombre, _tesoros) _tipoSaqueo _tesoro =
+    (_nombre, _tesoros ++ filter (_tipoSaqueo) [_tesoro]) 
+    
 -- --------------------------------------------------------------------------------------
 --  Navegando los siete mares
 -- --------------------------------------------------------------------------------------
@@ -114,9 +114,6 @@ robarTesoro _tripulacionA _tripulacionB _indice =
         nombre (_tripulacionA !! _indice),
         (tesoros (_tripulacionA !! _indice)) ++ (tesoros (_tripulacionB !! _indice))
     )
-
-algo triupacionA tripulacionB =
-    (zipWith saquear  triuplacionA tripulacionB) ++ drop ((length tripulacionB) tripulacionA)
 
 abordarBarco _barcoA _barcoB =
     (
