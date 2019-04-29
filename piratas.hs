@@ -42,11 +42,17 @@ agregarTesoro _tesoro _pirata = (nombre _pirata, _tesoro : (tesoros _pirata))
 
 esValioso _tesoro = (precioTesoro _tesoro) > 100
 
-perderTesorosValiosos _pirata = 
-    (nombre _pirata, filter (not.esValioso) (tesoros _pirata))
+porNombre _nombre _tesoro = _nombre == (nombreTesoro _tesoro)
 
-perderTesorosPorNombre _pirata _nombreTesoro = 
-    (nombre _pirata, filter (not.(==_nombreTesoro).nombreTesoro) (tesoros _pirata))
+-- Ejemplos:
+--  * perder tesoros valiosos:
+--      > perderTesoros esValioso jackSparrow
+--
+--  * perder tesoros por nombre:
+--      > perderTesoros (porNombre "Frasco de Arena") jackSparrow
+
+perderTesoros _criterio _pirata =
+    (nombre _pirata, filter (not._criterio) (tesoros _pirata))
 
 -- --------------------------------------------------------------------------------------
 --  Temporada de Saqueos
