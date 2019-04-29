@@ -72,7 +72,7 @@ saqueoComplejo _nombreTesoro _tesoro = True
     && saqueoValioso _tesoro
     && saqueoEspecifico _nombreTesoro _tesoro
 
-saquear (_nombre, _tesoros) _tipoSaqueo _tesoro =
+saquear _tipoSaqueo (_nombre, _tesoros) _tesoro =
     (_nombre, _tesoros ++ filter (_tipoSaqueo) [_tesoro]) 
 
 -- --------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ anclarEnIslaDeshabitada _barco _isla =
 
 --  b)
 atacarCiudad _barco _ciudad =
-    (nombreBarco _barco, zipWith (\p t -> saquear p (tipoSaqueo _barco) t) (tripulacion _barco) _ciudad, tipoSaqueo _barco)
+    (nombreBarco _barco, zipWith (saquear (tipoSaqueo _barco)) (tripulacion _barco) _ciudad, tipoSaqueo _barco)
 
 --  c) implementación simple, reutilizando atacarCiudad que respeta las preferencias de saqueo de c/u
 abordarBarcoConPreferencias _barcoA _barcoB = 
