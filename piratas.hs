@@ -108,32 +108,5 @@ atacarCiudad _barco _ciudad =
     (nombreBarco _barco, zipWith (saquear (tipoSaqueo _barco)) (tripulacion _barco) _ciudad, tipoSaqueo _barco)
 
 --  c) implementación simple, reutilizando atacarCiudad que respeta las preferencias de saqueo de c/u
-abordarBarcoConPreferencias _barcoA _barcoB = 
+abordarBarco _barcoA _barcoB = 
     atacarCiudad _barcoA (concat (map tesoros (tripulacion _barcoB)))
-
---  c) implementación alternativa, choreo uno a uno. cada tripulante de A, le roba a 
---     un respectivo tripulante de B (con su mismo subindice). 
---     los tripulantes de A restantes que no pudieron robar mantienen sus mismas
---     pertenencias (en caso de que tripulacion A>B).
---     los tripulantes restantes de B se ignoran (en caso que tripulacion A<B).
-takeLast _n _list = reverse (take _n (reverse _list))
-
-robarTesoro _tripulacionA _tripulacionB _indice =
-    (
-        nombre (_tripulacionA !! _indice),
-        (tesoros (_tripulacionA !! _indice)) ++ (tesoros (_tripulacionB !! _indice))
-    )
-
-abordarBarco _barcoA _barcoB =
-    (
-        nombreBarco _barcoA, 
-        (
-            map 
-            (robarTesoro (tripulacion _barcoA) (tripulacion _barcoB))
-            [0..(min (numTripulantes _barcoA) (numTripulantes _barcoB))-1]
-        ) 
-        ++
-        (
-            takeLast ((numTripulantes _barcoA) - (min (numTripulantes _barcoA) (numTripulantes _barcoB))) (tripulacion _barcoA)
-        )
-    )
